@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-
+const httpErrors = require("http-errors")
 require("dotenv").config();
 // nodemone check thay doi roi reset server
 // npm i nodemon -D , dev dependency deploy len thi mat
@@ -33,6 +33,22 @@ app.get("/api/employee/:id", (req, res, next) => {
 //authRouter
 const authRouter = require("./routes/auth.route");
 app.use("/api/auth", authRouter);
+
+
+// Kiem sat cac loi tu cac request trong server
+app.use(async (req, res, next)=>{
+  next(httpErrors.NotFound())
+})
+
+app.use((err, req, res, next)=>{
+  res.status(err.status || 500)
+  res.send({
+    'error':{
+      "status": err.status || 500,
+      "message": err.message
+    }
+  })
+})
 
 //hoat dong lang nghe cac request gui toi server
 app.listen(9999, "localhost", () => {
